@@ -15,6 +15,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
+import model.services.DepartmentService;
 
 public class MainViewController implements Initializable {
 	@FXML
@@ -30,7 +31,7 @@ public class MainViewController implements Initializable {
 	}
 	@FXML
 	public void onMenuItemDepartmentAction() {
-		loadView("/gui/DepartmentList.fxml");
+		loadView2("/gui/DepartmentList.fxml");
 	}
 	@FXML
 	public void onMenuItemAbountAction() {
@@ -66,6 +67,33 @@ public class MainViewController implements Initializable {
 			Alerts.showAlert("IO Exception","Error loandig view", e.getMessage(), AlertType.ERROR);
 			
 		}
-	}
-
+	}	
+	private synchronized  void loadView2(String absoluteName) {
+		//synchronized garante que processo multi theader não seja interrompido.
+		//Abria a About.
+		//Objeto carrega a tela.
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
+			VBox newVbox = loader.load();
+			//Pegar a referencia da cena do método da classe Main.
+			Scene  mainScene = Main.getMainScene();
+			//Pega ScrolPane\Content\VBox.
+			VBox mainVBox = (VBox)((ScrollPane)mainScene.getRoot()).getContent();
+			//Guardar uma referencia para o Menus.
+			Node mainMenu = mainVBox.getChildren().get(0); //pega o primeiro filho/posição.
+			//Limpa todos os filhos do VBox
+			mainVBox.getChildren().clear();
+			//Adcionar Menu do VBox
+			mainVBox.getChildren().add(mainMenu);
+			//Adicionar a Coleção menus About
+			mainVBox.getChildren().addAll(newVbox.getChildren());
+			DepartmentListController controller = loader.getController();
+			controller.setDepartmentService(new DepartmentService());
+			controller.updateTableView();
+		} catch (IOException e) {
+			//Exibir o Alert.
+			Alerts.showAlert("IO Exception","Error loandig view", e.getMessage(), AlertType.ERROR);
+			
+		}
+	}	
 }
