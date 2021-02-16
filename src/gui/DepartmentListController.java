@@ -85,6 +85,7 @@ public class DepartmentListController implements Initializable{
 			
 		} catch (IOException e) {
 			Alerts.showAlert("IO Exception", "Error loandig View", e.getMessage(), AlertType.ERROR);
+			System.out.println(e.getMessage());
 		}
 	}
 
