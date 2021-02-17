@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import application.Main;
+import gui.listeners.DataChangeListener;
 import gui.util.Alerts;
 import gui.util.utils;
 import javafx.collections.FXCollections;
@@ -26,7 +27,7 @@ import javafx.stage.Stage;
 import model.entities.Department;
 import model.services.DepartmentService;
 
-public class DepartmentListController implements Initializable{
+public class DepartmentListController implements Initializable, DataChangeListener{
 	private DepartmentService service;
 	private ObservableList<Department> obsList;
 	
@@ -81,6 +82,7 @@ public class DepartmentListController implements Initializable{
 			//Injeta o Departmant
 			controller.setDepartment(obj);
 			controller.setDepartmentService(new DepartmentService());
+			controller.subscribeDataChangeListener(this);
 			//Carrega os dados do Department no formulário.
 			controller.updateFormData();	
 			Stage dialogStage = new Stage();
@@ -95,6 +97,11 @@ public class DepartmentListController implements Initializable{
 			Alerts.showAlert("IO Exception", "Error loandig View", e.getMessage(), AlertType.ERROR);
 			System.out.println(e.getMessage());
 		}
+	}
+
+	@Override
+	public void onDataChanged() {
+		updateTableView();
 	}
 
 }
