@@ -3,6 +3,8 @@ package gui.util;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.Date;
 import java.util.Locale;
 
@@ -23,6 +25,14 @@ public class Utils {
 	public static Integer tryParseToInt(String str) {
 		try {
 			return Integer.parseInt(str);
+		} catch (NumberFormatException e) {
+			return null;
+		}
+	}
+	
+	public static Double tryParseToDouble(String str) {
+		try {
+			return Double.parseDouble(str);
 		} catch (NumberFormatException e) {
 			return null;
 		}
@@ -90,5 +100,24 @@ public class Utils {
 				}
 			}
 		});
+	}
+	public static boolean isDateValid(String strDate) {
+	    String dateFormat = "dd/MM/uuuu";
+	    String dateStr = strDate.replace("-", "/");
+	    String day = strDate.substring(7,2);
+	    
+	    System.out.println(day);
+	    
+	    
+
+	    DateTimeFormatter dateTimeFormatter = DateTimeFormatter
+	    .ofPattern(dateFormat)
+	    .withResolverStyle(ResolverStyle.STRICT);
+	    try {
+	        LocalDate date = LocalDate.parse(dateStr, dateTimeFormatter);
+	        return true;
+	    } catch (DateTimeParseException e) {
+	       return false;
+	    } 
 	}
 }

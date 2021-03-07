@@ -1,9 +1,13 @@
 package gui;
 
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -56,6 +60,7 @@ public class SellerFormController implements Initializable {
 
 	@FXML
 	private DatePicker dpBirthDate;
+	
 
 	@FXML
 	private TextField txtBaseSalary;
@@ -134,21 +139,44 @@ public class SellerFormController implements Initializable {
 	}
 
 	private Seller getFormData() {
+//		Pega os dados do formulario carrega objeto e retornando-o.		
 		Seller obj = new Seller();
 		
 		ValidationException exception = new ValidationException("Validation error");
 		
 		obj.setId(Utils.tryParseToInt(txtId.getText()));
-		
+//      Vefificar se é nulo ou vazio.		
 		if (txtName.getText() == null || txtName.getText().trim().equals("")) {
-			exception.addError("name", "Field can't be empty");
+			exception.addError("name", "Field name can't be empty");
 		}
 		obj.setName(txtName.getText());
+		
+		if (txtEmail.getText() == null || txtEmail.getText().trim().equals("")) {
+			exception.addError("Email", "Field email can't be empty");
+		}
+		obj.setEmail(txtEmail.getText());
+     
+//		Verificar se o DatePickt não esta nulo.	
+		if( dpBirthDate.getValue() == null){
+			exception.addError("birthDate", "Field Birth Date can't be empty");
+		}else {
+		//Pegar o valor do DatePickt no form e converte para instant.
+		Instant instant = Instant.from(dpBirthDate.getValue().atStartOfDay(ZoneId.systemDefault()));
+		obj.setBirthDate(Date.from(instant));
+		}
+		
+		if (txtBaseSalary.getText() == null || txtBaseSalary.getText().trim().equals("")) {
+			exception.addError("baseSalary", "Field Base Salary can't be empty");
+		}
+		obj.setBaseSalary(Utils.tryParseToDouble(txtBaseSalary.getText()));
+		
+		obj.setDepartment(comboBoxDepartment.getValue());
 
+//      Erros maior que zero lança uma exceção
 		if (exception.getErrors().size() > 0) {
 			throw exception;
 		}
-		
+//      Caso contrario retorna ao objeto.		
 		return obj;
 	}
 
@@ -194,11 +222,30 @@ public class SellerFormController implements Initializable {
 	}
 	
 	private void setErrorMessages(Map<String, String> errors) {
+//  Testa os possiveis erros e seta label correpondente.		
 		Set<String> fields = errors.keySet();
 		
 		if (fields.contains("name")) {
 			labelErrorName.setText(errors.get("name"));
+		}else {
+			labelErrorName.setText("");
 		}
+		if (fields.contains("Email")) {
+			labelErrorEmail.setText(errors.get("Email"));
+		}else {
+			labelErrorEmail.setText("");
+		}
+		if (fields.contains("baseSalary")) {
+			labelErrorBaseSalary.setText(errors.get("baseSalary"));
+		}else {
+			labelErrorBaseSalary.setText("");
+		}
+		if (fields.contains("birthDate")) {
+			labelErrorBirthDate.setText(errors.get("birthDate"));
+		}else {
+			labelErrorBirthDate.setText("");			
+		}
+		
 	}
 	
 	private void initializeComboBoxDepartment() {		
